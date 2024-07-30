@@ -13,6 +13,7 @@ Unity 2022.3 LTS for the Meta Quest
 <!-- GETTING STARTED -->
 ## Getting Started
 
+
 ### Prerequisites
 
 The following packages are necessary for this project to run.
@@ -22,6 +23,16 @@ The following packages are necessary for this project to run.
 - Universal Rendering Pipeline
 - OpenXR
 
+You will need to import `Samples` once the project has been loaded.
+These are accessible through the PackageManager window
+
+**XR Hands:**
+- Gestures
+- Hand Visualizer
+
+**XR InteractionToolkit:**
+- Start Assets
+- Hands Interaction Demo
 
 <!-- USAGE EXAMPLES 
 ## Usage -->
