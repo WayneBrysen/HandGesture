@@ -4,40 +4,76 @@ using UnityEngine;
 
 public class GestureMovement : MonoBehaviour
 {
-    public Transform xrOrigin; // 指向XR Origin或XR Rig
-    public float speed = 1.0f;
-    private bool isMoving = false;
+    public Transform xrOrigin;
+    public Transform gestureTransform; // L_Wrist的Transform，用于跟踪手势
+    public float baseSpeed = 1.0f;
+    public float maxSpeed = 5.0f; // 最大速度
+    public float minSpeed = 0.5f; // 最小速度
+    public float maxDistance = 0.4f; // 手势距离最大值（40厘米）
+    public float minDistance = 0.3f; // 手势距离最小值（25厘米）
+
+    private bool isMovingForward = false;
+    private bool isMovingBackward = false;
 
     void Update()
     {
-        // 如果在移动，则持续移动XR Origin
-        if (isMoving)
+        if (isMovingForward)
         {
-            MoveForward();
+            Move(true);
+        }
+        else if (isMovingBackward)
+        {
+            Move(false);
         }
     }
 
-    // 当手势被识别时调用这个方法
-    public void OnGesturePerformed()
+    public void OnForwardGesturePerformed()
     {
-        isMoving = true; // 开始移动
+        isMovingForward = true;
     }
 
-    // 当手势结束时调用这个方法
+    public void OnBackwardGesturePerformed()
+    {
+        isMovingBackward = true;
+    }
+
     public void OnGestureEnded()
     {
-        isMoving = false; // 停止移动
+        isMovingForward = false;
+        isMovingBackward = false;
     }
 
-    void MoveForward()
+    void Move(bool forward)
     {
-        // 获取摄像头的前向方向
-        Vector3 forwardDirection = Camera.main.transform.forward;
-        // 保持Y为0，确保只在水平面移动
-        forwardDirection.y = 0;
-        forwardDirection.Normalize(); // 归一化以确保方向向量的大小为1
+        Vector3 direction = Camera.main.transform.forward;
+        if (!forward)
+        {
+            direction = -direction; // 反向移动
+        }
 
-        // 移动XR Origin的位置
-        xrOrigin.position += forwardDirection * speed * Time.deltaTime;
+        direction.y = 0;
+        direction.Normalize();
+
+        // 计算手势到摄像头的距离
+        float distance = Vector3.Distance(gestureTransform.position, Camera.main.transform.position);
+
+        // 根据距离调整速度
+        float adjustedSpeed;
+        if (distance <= minDistance)
+        {
+            adjustedSpeed = minSpeed; // 距离小于最小值时，速度为最小速度
+        }
+        else if (distance >= maxDistance)
+        {
+            adjustedSpeed = maxSpeed; // 距离大于最大值时，速度为最大速度
+        }
+        else
+        {
+            // 在最小和最大距离之间，进行线性插值
+            float speedFactor = Mathf.InverseLerp(minDistance, maxDistance, distance);
+            adjustedSpeed = Mathf.Lerp(minSpeed, maxSpeed, speedFactor);
+        }
+
+        xrOrigin.position += direction * adjustedSpeed * Time.deltaTime;
     }
 }
