@@ -325,7 +325,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HandTrackingEvents: {fileID: 1963209681}
-  m_HandShapeOrPose: {fileID: 11400000, guid: 7fdd2afa44a436446bdb55fa7872a77d, type: 2}
+  m_HandShapeOrPose: {fileID: 11400000, guid: 2dc435ac6a30b5241b28123117815d99, type: 2}
   m_TargetTransform: {fileID: 0}
   m_Background: {fileID: 316090479}
   m_GesturePerformed:
@@ -670,7 +670,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xrOrigin: {fileID: 458653219}
   handTransform: {fileID: 137446245}
+  railingPrefab: {fileID: 6653834291098918112, guid: ae12499a23b015b44b176e888b304e28, type: 3}
   rotationSensitivity: 10000
+  railingOffset: 0.1
 --- !u!1001 &511627252
 PrefabInstance:
   m_ObjectHideFlags: 0
