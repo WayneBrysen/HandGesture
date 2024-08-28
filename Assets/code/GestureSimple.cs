@@ -4,24 +4,25 @@ using UnityEngine;
 
 public class GestureSimple : MonoBehaviour
 {
-    public Transform xrOrigin;
-    public Transform gestureTransform;
-    public float baseSpeed = 1.0f;
-    public float maxSpeed = 5.0f;
-    public float minSpeed = 0.5f;
-    public float maxDistance = 0.5f;
-    public float minDistance = 0.3f;
+    public Transform xrOrigin; // Reference to the XR Origin for movement and rotation
+    public Transform gestureTransform; // Reference to the transform used for gesture input
+    public float baseSpeed = 1.0f; // Base speed for movement
+    public float maxSpeed = 5.0f; // Maximum speed when the gesture is at max distance
+    public float minSpeed = 0.5f; // Minimum speed when the gesture is at min distance
+    public float maxDistance = 0.5f; // Maximum distance for gesture scaling
+    public float minDistance = 0.3f; // Minimum distance for gesture scaling
 
-    public float maxRotationSpeed = 50.0f;
-    public float minRotationSpeed = 10.0f;
+    public float maxRotationSpeed = 50.0f; // Maximum rotation speed
+    public float minRotationSpeed = 10.0f; // Minimum rotation speed
 
-    private bool isMovingForward = false;
-    private bool isMovingBackward = false;
-    private bool isRotatingLeft = false;
-    private bool isRotatingRight = false;
+    private bool isMovingForward = false; // State to check if moving forward
+    private bool isMovingBackward = false; // State to check if moving backward
+    private bool isRotatingLeft = false; // State to check if rotating left
+    private bool isRotatingRight = false; // State to check if rotating right
 
     void Update()
     {
+        // Handle movement
         if (isMovingForward)
         {
             Move(true);
@@ -31,6 +32,7 @@ public class GestureSimple : MonoBehaviour
             Move(false);
         }
 
+        // Handle rotation
         if (isRotatingLeft)
         {
             Rotate(true);
@@ -41,26 +43,31 @@ public class GestureSimple : MonoBehaviour
         }
     }
 
+    // Triggered when a forward gesture is performed
     public void OnForwardGesturePerformed()
     {
         isMovingForward = true;
     }
 
+    // Triggered when a backward gesture is performed
     public void OnBackwardGesturePerformed()
     {
         isMovingBackward = true;
     }
 
+    // Triggered when a left rotation gesture is performed
     public void OnLeftRotationGesturePerformed()
     {
         isRotatingLeft = true;
     }
 
+    // Triggered when a right rotation gesture is performed
     public void OnRightRotationGesturePerformed()
     {
         isRotatingRight = true;
     }
 
+    // Triggered when any gesture ends
     public void OnGestureEnded()
     {
         isMovingForward = false;
@@ -69,66 +76,65 @@ public class GestureSimple : MonoBehaviour
         isRotatingRight = false;
     }
 
+    // Handles movement logic
     void Move(bool forward)
     {
-        Vector3 direction = Camera.main.transform.forward;
+        Vector3 direction = Camera.main.transform.forward; // Get the forward direction of the camera
         if (!forward)
         {
-            direction = -direction; // 反向移动
+            direction = -direction; // Reverse direction for backward movement
         }
 
-        direction.y = 0;
-        direction.Normalize();
+        direction.y = 0; // Keep movement in the horizontal plane
+        direction.Normalize(); // Normalize the direction vector
 
-        // 计算手势到摄像头的距离
-        float distance = Vector3.Distance(gestureTransform.position, Camera.main.transform.position);
+        float distance = Vector3.Distance(gestureTransform.position, Camera.main.transform.position); // Calculate distance from gesture to camera
 
-        // 根据距离调整速度
+        // Adjust speed based on distance
         float adjustedSpeed;
         if (distance <= minDistance)
         {
-            adjustedSpeed = minSpeed; // 距离小于最小值时，速度为最小速度
+            adjustedSpeed = minSpeed; // Set to minimum speed if distance is below the minimum threshold
         }
         else if (distance >= maxDistance)
         {
-            adjustedSpeed = maxSpeed; // 距离大于最大值时，速度为最大速度
+            adjustedSpeed = maxSpeed; // Set to maximum speed if distance exceeds the maximum threshold
         }
         else
         {
-            // 在最小和最大距离之间，进行线性插值
+            // Linearly interpolate speed between minSpeed and maxSpeed based on the distance
             float speedFactor = Mathf.InverseLerp(minDistance, maxDistance, distance);
             adjustedSpeed = Mathf.Lerp(minSpeed, maxSpeed, speedFactor);
         }
 
-        xrOrigin.position += direction * adjustedSpeed * Time.deltaTime;
+        xrOrigin.position += direction * adjustedSpeed * Time.deltaTime; // Apply the movement to the XR origin
     }
 
+    // Handles rotation logic
     void Rotate(bool left)
     {
-        // 计算手势到摄像头的距离
-        float distance = Vector3.Distance(gestureTransform.position, Camera.main.transform.position);
+        float distance = Vector3.Distance(gestureTransform.position, Camera.main.transform.position); // Calculate distance from gesture to camera
 
-        // 根据距离调整旋转速度
+        // Adjust rotation speed based on distance
         float adjustedRotationSpeed;
         if (distance <= minDistance)
         {
-            adjustedRotationSpeed = minRotationSpeed; // 距离小于最小值时，旋转速度为最小速度
+            adjustedRotationSpeed = minRotationSpeed; // Set to minimum rotation speed if distance is below the minimum threshold
         }
         else if (distance >= maxDistance)
         {
-            adjustedRotationSpeed = maxRotationSpeed; // 距离大于最大值时，旋转速度为最大速度
+            adjustedRotationSpeed = maxRotationSpeed; // Set to maximum rotation speed if distance exceeds the maximum threshold
         }
         else
         {
-            // 在最小和最大距离之间，进行线性插值
+            // Linearly interpolate rotation speed between minRotationSpeed and maxRotationSpeed based on the distance
             float speedFactor = Mathf.InverseLerp(minDistance, maxDistance, distance);
             adjustedRotationSpeed = Mathf.Lerp(minRotationSpeed, maxRotationSpeed, speedFactor);
         }
 
-        // 计算旋转方向
-        float rotationDirection = left ? -1 : 1;
+        float rotationDirection = left ? -1 : 1; // Determine the rotation direction
 
-        // 以调整后的速度执行旋转
+        // Apply the rotation to the XR origin
         xrOrigin.Rotate(Vector3.up, rotationDirection * adjustedRotationSpeed * Time.deltaTime);
     }
 }

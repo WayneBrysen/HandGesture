@@ -4,34 +4,36 @@ using UnityEngine;
 
 public class GestureHold : MonoBehaviour
 {
-    public Transform xrOrigin;
-    public Transform handTransform;
-    public GameObject railingPrefab;
-    public float rotationSensitivity = 100.0f; 
-    public float railingOffset = 10f; 
+    public Transform xrOrigin; // Reference to the XR Origin for rotation
+    public Transform handTransform; // Reference to the transform representing the hand
+    public GameObject railingPrefab; // Prefab for the railing to spawn
+    public float rotationSensitivity = 100.0f; // Sensitivity factor for rotation based on hand movement
+    public float railingOffset = 10f; // Distance offset for spawning the railing
 
-    private Vector3 initialHandPosition;
-    private bool isGestureActive = false;
-    private GameObject spawnedRailing;
+    private Vector3 initialHandPosition; // Initial position of the hand when the gesture starts
+    private bool isGestureActive = false; // Flag to check if the gesture is currently active
+    private GameObject spawnedRailing; // Reference to the spawned railing object
 
     void Update()
     {
         if (isGestureActive)
         {
+            // Calculate horizontal movement of the hand
             float handDeltaX = handTransform.position.x - initialHandPosition.x;
-
             Debug.Log("Hand Delta X: " + handDeltaX);
 
+            // Calculate rotation angle based on hand movement and sensitivity
             float rotationAngle = -handDeltaX * rotationSensitivity;
-
             Debug.Log("Rotation Angle: " + rotationAngle);
 
+            // Apply rotation to the XR Origin
             xrOrigin.Rotate(Vector3.up, rotationAngle * Time.deltaTime);
-
             Debug.Log("XR Origin Rotation after Update: " + xrOrigin.rotation.eulerAngles);
 
+            // Update the initial hand position for the next frame
             initialHandPosition = handTransform.position;
 
+            // Check if railing is already spawned; if not, spawn it
             if (spawnedRailing == null)
             {
                 SpawnRailing();
@@ -39,6 +41,7 @@ public class GestureHold : MonoBehaviour
         }
         else
         {
+            // Destroy the spawned railing if the gesture is not active
             if (spawnedRailing != null)
             {
                 Destroy(spawnedRailing);
@@ -46,32 +49,34 @@ public class GestureHold : MonoBehaviour
         }
     }
 
+    // Called when the gesture is started
     public void OnGestureStart()
     {
         isGestureActive = true;
-        initialHandPosition = handTransform.position;
-
+        initialHandPosition = handTransform.position; // Record initial hand position
         Debug.Log("Gesture Started. Initial Hand Position: " + initialHandPosition);
     }
 
+    // Called when the gesture ends
     public void OnGestureEnd()
     {
-        isGestureActive = false;
-
+        isGestureActive = false; // Set gesture as inactive
         Debug.Log("Gesture Ended.");
     }
 
+    // Spawns the railing object at the calculated position
     void SpawnRailing()
     {
+        // Calculate the spawn position based on hand position and offset
         Vector3 spawnPosition = handTransform.position + handTransform.forward * railingOffset - handTransform.up * 0.04f;
 
-        // 实例化栏杆并将其旋转90度
+        // Instantiate the railing prefab at the calculated position and with the hand's rotation
         spawnedRailing = Instantiate(railingPrefab, spawnPosition, handTransform.rotation);
 
-        // 旋转栏杆，使其在生成时旋转90度
+        // Rotate the spawned railing to match desired orientation
         spawnedRailing.transform.Rotate(0, 0, 90);
 
-        // 将栏杆附加到手部，以便随手部移动
+        // Set the railing as a child of the hand transform
         spawnedRailing.transform.SetParent(handTransform);
 
         Debug.Log("Railing Spawned at: " + spawnPosition);
