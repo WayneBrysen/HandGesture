@@ -3,20 +3,20 @@ using TMPro;
 
 public class DistanceDisplay : MonoBehaviour
 {
-    public Transform gestureTransform; // 手势的Transform
-    public Transform targetObject; // 目标GameObject的Transform
-    public TMP_Text distanceText; // 用于显示距离的TextMesh Pro组件
-    public float distanceMultiplier = 100.0f; // 用于放大距离的倍数
+    public Transform gestureTransform; // Transform of the gesture object
+    public Transform targetObject; // Transform of the target GameObject
+    public TMP_Text distanceText; // TextMesh Pro component to display the distance
+    public float distanceMultiplier = 100.0f; // Multiplier to scale the distance for display purposes
 
     void Update()
     {
-        // 计算手势到目标对象的距离
+        // Calculate the distance between the gesture object and the target object
         float distance = Vector3.Distance(gestureTransform.position, targetObject.position);
 
-        // 放大距离显示，以便更明显
+        // Scale the distance for a more noticeable display
         float displayDistance = distance * distanceMultiplier;
 
-        // 更新TextMesh Pro组件显示距离数据
+        // Update the TextMesh Pro component to show the distance value
         distanceText.text = "Distance to Target: " + displayDistance.ToString("F2") + " cm";
     }
 }
