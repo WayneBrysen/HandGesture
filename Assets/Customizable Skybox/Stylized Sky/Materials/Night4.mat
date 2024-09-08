@@ -68,7 +68,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HorizonLineContribution: 0.262
+    - _HorizonLineContribution: 0.294
     - _HorizonLineExponent: 12.3
     - _Metallic: 0
     - _Mode: 0
@@ -81,7 +81,7 @@ Material:
     - _SunDiscContribution: 1
     - _SunDiscExponent: 250000
     - _SunDiscMultiplier: 500
-    - _SunHaloContribution: 0.071
+    - _SunHaloContribution: 0.077
     - _SunHaloExponent: 500
     - _UVSec: 0
     - _ZWrite: 1
@@ -90,8 +90,8 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HorizonLineColor: {r: 0.08644827, g: 0.20568717, b: 0.5849056, a: 0}
-    - _SkyGradientBottom: {r: 0, g: 0.031139756, b: 0.18238991, a: 0}
-    - _SkyGradientTop: {r: 0, g: 0.10194534, b: 0.2578616, a: 0}
+    - _SkyGradientBottom: {r: 0.36477977, g: 0.09062133, b: 0.16982266, a: 0.5411765}
+    - _SkyGradientTop: {r: 0.020766526, g: 0.11590772, b: 0.26415092, a: 0.18431373}
     - _SunDiscColor: {r: 0.7924528, g: 0.1294214, b: 0.032395728, a: 1}
     - _SunHaloColor: {r: 0.8679245, g: 0.21672526, b: 0.144654, a: 1}
   m_BuildTextureStacks: []
