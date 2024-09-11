@@ -4,57 +4,108 @@ using UnityEngine;
 
 public class TriggerBox : MonoBehaviour
 {
-    public Light pointLight;  // 指向场景中的 Point Light
-    public AudioSource audioSource;  // 指向场景中的 Audio Source
-    public Color triggeredLightColor = Color.red;  // 当触发时改变的光颜色
-    private Color originalLightColor;  // 保存 Point Light 的原始颜色
+    public Light pointLight;
+    public AudioSource audioSource;
+    public Color triggeredLightColor = Color.red;
+    private Color originalLightColor;
+
+    public Renderer targetRenderer;
+    private MaterialPropertyBlock propertyBlock;
+    private Color originalEmissionColor;
+    public Color triggeredEmissionColor = Color.red * 10f;
+    private Coroutine emissionCoroutine;
+    private float timeToChange = 3f;
 
     void Start()
     {
-        // 保存 Point Light 的原始颜色
+        // Save the original color of the Point Light
         if (pointLight != null)
         {
             originalLightColor = pointLight.color;
         }
+
+        // Initialize MaterialPropertyBlock
+        propertyBlock = new MaterialPropertyBlock();
+
+        // Get the initial emission color of the target object
+        if (targetRenderer != null)
+        {
+            targetRenderer.GetPropertyBlock(propertyBlock);
+            originalEmissionColor = targetRenderer.sharedMaterial.GetColor("_EmissionColor");
+            propertyBlock.SetColor("_EmissionColor", originalEmissionColor);
+            targetRenderer.SetPropertyBlock(propertyBlock);
+        }
     }
 
-    // 当玩家进入触发区域时
+    // When the player enters the trigger zone
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))  // 确保只有玩家触发
+        if (other.CompareTag("Player"))  // Ensure only the player triggers
         {
-            // 改变 Point Light 的颜色
+            // Change the color of the Point Light
             if (pointLight != null)
             {
                 pointLight.color = triggeredLightColor;
             }
 
-            // 循环播放音频
+            // Loop audio playback
             if (audioSource != null && !audioSource.isPlaying)
             {
-                audioSource.loop = true;  // 设置音频循环
-                audioSource.Play();  // 播放音频
+                audioSource.loop = true;  // Set the audio to loop
+                audioSource.Play();  // Play the audio
+            }
+
+            // Smoothly change the emission color of the target object
+            if (targetRenderer != null)
+            {
+                if (emissionCoroutine != null) StopCoroutine(emissionCoroutine);
+                emissionCoroutine = StartCoroutine(ChangeEmissionColor(targetRenderer, originalEmissionColor, triggeredEmissionColor, timeToChange)); // Duration of 3 seconds
             }
         }
     }
 
-    // 当玩家离开触发区域时
+    // When the player leaves the trigger zone
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))  // 确保只有玩家触发
+        if (other.CompareTag("Player"))  // Ensure only the player triggers
         {
-            // 恢复 Point Light 的原始颜色
+            // Restore the original color of the Point Light
             if (pointLight != null)
             {
                 pointLight.color = originalLightColor;
             }
 
-            // 停止音频播放
+            // Stop audio playback
             if (audioSource != null && audioSource.isPlaying)
             {
-                audioSource.Stop();  // 停止音频
-                audioSource.loop = false;  // 取消音频循环
+                audioSource.Stop();  // Stop the audio
+                audioSource.loop = false;  // Cancel audio loop
+            }
+
+            // Smoothly restore the emission color of the target object
+            if (targetRenderer != null)
+            {
+                if (emissionCoroutine != null) StopCoroutine(emissionCoroutine);
+                emissionCoroutine = StartCoroutine(ChangeEmissionColor(targetRenderer, triggeredEmissionColor, originalEmissionColor, timeToChange)); // Duration of 3 seconds
             }
         }
+    }
+
+    // Coroutine to smoothly change the emission color
+    private IEnumerator ChangeEmissionColor(Renderer renderer, Color fromColor, Color toColor, float duration)
+    {
+        float time = 0f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            Color newColor = Color.Lerp(fromColor, toColor, time / duration);  // Interpolate to calculate the new emission color
+            propertyBlock.SetColor("_EmissionColor", newColor);
+            renderer.SetPropertyBlock(propertyBlock);
+            yield return null;
+        }
+
+        // Ensure the final color is correctly set
+        propertyBlock.SetColor("_EmissionColor", toColor);
+        renderer.SetPropertyBlock(propertyBlock);
     }
 }
