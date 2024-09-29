@@ -20,15 +20,6 @@ public class GestureSimple : MonoBehaviour
     private bool isRotatingLeft = false; // State to check if rotating left
     private bool isRotatingRight = false; // State to check if rotating right
 
-    private bool isTeleportActive = false; // activate teleport function
-
-    public GameObject teleportPose;
-    public GameObject movementPose;
-
-    private void Start()
-    {
-        SetNavigationMode(false);
-    }
 
     void Update()
     {
@@ -53,17 +44,6 @@ public class GestureSimple : MonoBehaviour
         }
     }
 
-    public void buttonPressToggle()
-    {
-        bool isTeleportActive = !teleportPose.activeSelf;
-        SetNavigationMode(isTeleportActive);
-    }
-
-    private void SetNavigationMode(bool isActive)
-    {
-        teleportPose.SetActive(isActive);
-        movementPose.SetActive(!isActive);
-    }
 
     // Triggered when a forward gesture is performed
     public void OnForwardGesturePerformed()

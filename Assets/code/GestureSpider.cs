@@ -13,8 +13,8 @@ public class GestureSpider : MonoBehaviour
     public GameObject xrOrigin;
     public float arrowYPosition = 1.0f;
     public Transform handTransform;
+    private bool useLerpForMovement = true;
     private GameObject currentArrow;
-    private Coroutine gestureCoroutine;
     private bool isGestureActive = false;
     private bool isRotatingGestureActive = false;
     private float gestureMaintainTimer = 0f;
@@ -89,7 +89,14 @@ public class GestureSpider : MonoBehaviour
         isRotatingGestureActive = false;
         if (currentArrow != null)
         {
-            StartCoroutine(SmoothMoveToArrow());
+            if (useLerpForMovement)
+            {
+                StartCoroutine(SmoothMoveToArrow());
+            }
+            else
+            {
+                TeleportToArrow();
+            }
         }
     }
 
@@ -100,6 +107,21 @@ public class GestureSpider : MonoBehaviour
             Destroy(currentArrow);
             currentArrow = null;
         }
+    }
+
+    private void TeleportToArrow()
+    {
+        Vector3 targetPosition = new Vector3(
+            currentArrow.transform.position.x,
+            xrOrigin.transform.position.y,
+            currentArrow.transform.position.z);
+        Quaternion targetRotation = currentArrow.transform.rotation;
+
+        xrOrigin.transform.position = targetPosition;
+        xrOrigin.transform.rotation = targetRotation;
+
+        Debug.Log("Player teleported instantly!");
+        RemoveArrow();
     }
 
     private IEnumerator SmoothMoveToArrow()
@@ -139,6 +161,16 @@ public class GestureSpider : MonoBehaviour
         currentArrow.transform.Rotate(Vector3.up, handMovementDelta * rotationSensitivity);
 
         initialHandPosition = handTransform.position;
+    }
+
+    public void SetLerpFalse()
+    {
+        useLerpForMovement = false;
+    }
+
+    public void SetLerpTrue()
+    {
+        useLerpForMovement = true;
     }
 }
 
