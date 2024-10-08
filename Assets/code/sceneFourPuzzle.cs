@@ -7,18 +7,21 @@ public class sceneFourPuzzle : MonoBehaviour
     // Variables for books
     public Transform playerTransform;
     public GameObject targetPosition;
-    public BookHolder[] placeHolders;
+    public BookHolderAlter[] placeHolders;
 
     // Variables for buttons
     public GameObject[] buttons;
     private int buttonsPressed = 0;
 
+    // A HashSet to keep track of pressed buttons
+    private HashSet<GameObject> pressedButtons = new HashSet<GameObject>();
+
     // Check if all books are collected
     private bool AllBooksCollected()
     {
-        foreach (BookHolder bookHolder in placeHolders)
+        foreach (BookHolderAlter BookHolderAlter in placeHolders)
         {
-            if (!bookHolder.IsFilled())
+            if (!BookHolderAlter.IsFilled())
             {
                 return false;
             }
@@ -33,10 +36,15 @@ public class sceneFourPuzzle : MonoBehaviour
     }
 
     // Call this method when a button is pressed
-    public void OnButtonPressed()
+    public void OnButtonPressed(GameObject button)
     {
-        buttonsPressed++;
-        CheckPuzzleCompletion();
+        // Check if this button has already been pressed
+        if (!pressedButtons.Contains(button))
+        {
+            pressedButtons.Add(button);
+            buttonsPressed++;
+            CheckPuzzleCompletion();
+        }
     }
 
     // Check both conditions

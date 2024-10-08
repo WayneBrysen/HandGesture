@@ -6,6 +6,8 @@ public class GestureSimple : MonoBehaviour
 {
     public Transform xrOrigin; // Reference to the XR Origin for movement and rotation
     public Transform gestureTransform; // Reference to the transform used for gesture input
+    private CharacterController characterController;
+
     public float baseSpeed = 1.0f; // Base speed for movement
     public float maxSpeed = 5.0f; // Maximum speed when the gesture is at max distance
     public float minSpeed = 0.5f; // Minimum speed when the gesture is at min distance
@@ -19,7 +21,10 @@ public class GestureSimple : MonoBehaviour
     private bool isMovingBackward = false; // State to check if moving backward
     private bool isRotatingLeft = false; // State to check if rotating left
     private bool isRotatingRight = false; // State to check if rotating right
-
+    void Start()
+    {
+        characterController = xrOrigin.GetComponent<CharacterController>();
+    }
 
     void Update()
     {
@@ -81,35 +86,34 @@ public class GestureSimple : MonoBehaviour
     // Handles movement logic
     void Move(bool forward)
     {
-        Vector3 direction = Camera.main.transform.forward; // Get the forward direction of the camera
+        Vector3 direction = Camera.main.transform.forward;
         if (!forward)
         {
-            direction = -direction; // Reverse direction for backward movement
+            direction = -direction;
         }
 
-        direction.y = 0; // Keep movement in the horizontal plane
-        direction.Normalize(); // Normalize the direction vector
+        direction.y = 0; // 保持水平移动
+        direction.Normalize();
 
-        float distance = Vector3.Distance(gestureTransform.position, Camera.main.transform.position); // Calculate distance from gesture to camera
+        float distance = Vector3.Distance(gestureTransform.position, Camera.main.transform.position);
 
-        // Adjust speed based on distance
         float adjustedSpeed;
         if (distance <= minDistance)
         {
-            adjustedSpeed = minSpeed; // Set to minimum speed if distance is below the minimum threshold
+            adjustedSpeed = minSpeed;
         }
         else if (distance >= maxDistance)
         {
-            adjustedSpeed = maxSpeed; // Set to maximum speed if distance exceeds the maximum threshold
+            adjustedSpeed = maxSpeed;
         }
         else
         {
-            // Linearly interpolate speed between minSpeed and maxSpeed based on the distance
             float speedFactor = Mathf.InverseLerp(minDistance, maxDistance, distance);
             adjustedSpeed = Mathf.Lerp(minSpeed, maxSpeed, speedFactor);
         }
 
-        xrOrigin.position += direction * adjustedSpeed * Time.deltaTime; // Apply the movement to the XR origin
+        // 使用CharacterController移动
+        characterController.Move(direction * adjustedSpeed * Time.deltaTime);
     }
 
     // Handles rotation logic

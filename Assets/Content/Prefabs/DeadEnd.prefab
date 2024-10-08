@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2178286139757509272}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 0}
 --- !u!23 &3620438298257604133
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -121,3 +121,5 @@ MonoBehaviour:
   pointLight: {fileID: 0}
   audioSource: {fileID: 0}
   triggeredLightColor: {r: 1, g: 0, b: 0, a: 1}
+  targetRenderer: {fileID: 0}
+  triggeredEmissionColor: {r: 10, g: 0, b: 0, a: 10}

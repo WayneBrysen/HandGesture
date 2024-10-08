@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class fourthpuzzleManager : MonoBehaviour
+public class FourthPuzzleManager : MonoBehaviour
 {
     // Variables for books
     public Transform playerTransform;
@@ -12,6 +12,9 @@ public class fourthpuzzleManager : MonoBehaviour
     // Variables for buttons
     public GameObject[] buttons;
     private int buttonsPressed = 0;
+
+    // A HashSet to keep track of pressed buttons
+    private HashSet<GameObject> pressedButtons = new HashSet<GameObject>();
 
     // Check if all books are collected
     private bool AllBooksCollected()
@@ -33,10 +36,15 @@ public class fourthpuzzleManager : MonoBehaviour
     }
 
     // Call this method when a button is pressed
-    public void OnButtonPressed()
+    public void OnButtonPressed(GameObject button)
     {
-        buttonsPressed++;
-        CheckPuzzleCompletion();
+        // Check if this button has already been pressed
+        if (!pressedButtons.Contains(button))
+        {
+            pressedButtons.Add(button);
+            buttonsPressed++;
+            CheckPuzzleCompletion();
+        }
     }
 
     // Check both conditions
